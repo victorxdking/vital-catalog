@@ -1,19 +1,21 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User, LogOut, Menu, Heart, Search } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useAuth } from '../hooks/useAuth';
+import { useFavorites } from '../hooks/useFavorites';
 
 interface HeaderProps {
   onMenuToggle?: () => void;
 }
 
 export function Header({ onMenuToggle }: HeaderProps) {
-  const { state, dispatch } = useApp();
+  const { user, signOut } = useAuth();
+  const { favoritesCount } = useFavorites();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch({ type: 'SET_USER', payload: null });
+  const handleLogout = async () => {
+    await signOut();
     navigate('/');
   };
 
@@ -38,23 +40,40 @@ export function Header({ onMenuToggle }: HeaderProps) {
             </button>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className={`text-base font-bold uppercase tracking-wide transition-colors ${location.pathname === '/' ? 'text-white underline underline-offset-8' : 'text-white hover:text-[#7ed957]'}`}>Home</Link>
-            <a href="#quem-somos" className="text-base font-bold uppercase tracking-wide text-white hover:text-[#7ed957] transition-colors">Quem Somos</a>
-            <Link to="/" className="text-base font-bold uppercase tracking-wide text-white hover:text-[#7ed957] transition-colors">Catálogo</Link>
-            <Link to="/favorites" className={`flex items-center space-x-1 text-base font-bold uppercase tracking-wide transition-colors ${location.pathname === '/favorites' ? 'text-white underline underline-offset-8' : 'text-white hover:text-[#7ed957]'}`}><Heart className="w-5 h-5" /><span>Favoritos</span>{state.favorites.length > 0 && (<span className="ml-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{state.favorites.length}</span>)}</Link>
-            <a href="#trabalhe-conosco" className="text-base font-bold uppercase tracking-wide text-white hover:text-[#7ed957] transition-colors">Trabalhe Conosco</a>
+            {!isAdminArea && (
+              <>
+                <Link to="/" className={`text-base font-bold uppercase tracking-wide transition-colors ${location.pathname === '/' ? 'text-white underline underline-offset-8' : 'text-white hover:text-[#7ed957]'}`}>Home</Link>
+                <a href="#quem-somos" className="text-base font-bold uppercase tracking-wide text-white hover:text-[#7ed957] transition-colors">Quem Somos</a>
+                <Link to="/" className="text-base font-bold uppercase tracking-wide text-white hover:text-[#7ed957] transition-colors">Catálogo</Link>
+                <Link to="/favorites" className={`flex items-center space-x-1 text-base font-bold uppercase tracking-wide transition-colors relative ${location.pathname === '/favorites' ? 'text-white underline underline-offset-8' : 'text-white hover:text-[#7ed957]'}`}>
+                  <Heart className="w-5 h-5" />
+                  <span>Favoritos</span>
+                  {favoritesCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#7ed957] text-[#183263] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {favoritesCount}
+                    </span>
+                  )}
+                </Link>
+                <a href="#trabalhe-conosco" className="text-base font-bold uppercase tracking-wide text-white hover:text-[#7ed957] transition-colors">Trabalhe Conosco</a>
+              </>
+            )}
           </nav>
           <div className="hidden md:flex items-center space-x-4 ml-4">
-            {state.user ? (
+            {user ? (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-white">Olá, {state.user.name}</span>
-                {state.user.role === 'admin' && !isAdminArea && (
+                <span className="text-sm text-white">Olá, {user.name}</span>
+                {user.role === 'admin' && !isAdminArea && (
                   <Link to="/admin" className="bg-[#3a5a8c] text-white px-3 py-1 rounded-md text-sm hover:bg-[#7ed957] transition-colors">Admin</Link>
                 )}
-                <button onClick={handleLogout} className="p-2 text-white hover:text-[#7ed957] hover:bg-[#25407a] rounded-full transition-colors"><LogOut className="w-4 h-4" /></button>
+                <button onClick={handleLogout} className="p-2 text-white hover:text-[#7ed957] hover:bg-[#25407a] rounded-full transition-colors">
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             ) : (
-              <Link to="/login" className="flex items-center space-x-1 bg-[#3a5a8c] text-white px-4 py-2 rounded-md text-sm hover:bg-[#7ed957] transition-colors"><User className="w-4 h-4" /><span>Entrar</span></Link>
+              <Link to="/login" className="flex items-center space-x-1 bg-[#3a5a8c] text-white px-4 py-2 rounded-md text-sm hover:bg-[#7ed957] transition-colors">
+                <User className="w-4 h-4" />
+                <span>Entrar</span>
+              </Link>
             )}
           </div>
         </div>

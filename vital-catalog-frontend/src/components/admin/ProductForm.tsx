@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { X, Upload, Trash2 } from 'lucide-react';
 import { Product } from '../../types';
 import { useProducts } from '../../hooks/useProducts';
-import { useApp } from '../../context/AppContext';
+import { useToast } from '../../context/ToastContext';
 
 interface ProductFormProps {
   product?: Product | null;
@@ -22,8 +22,8 @@ interface ProductFormData {
 }
 
 export function ProductForm({ product, isOpen, onClose }: ProductFormProps) {
-  const { addProduct, updateProduct } = useProducts();
-  const { state } = useApp();
+  const { addProduct, updateProduct, categories } = useProducts();
+  const { showToast } = useToast();
   const [imageUrl, setImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,15 +56,18 @@ export function ProductForm({ product, isOpen, onClose }: ProductFormProps) {
     
     try {
       if (product) {
-        updateProduct({ ...product, ...data });
+        await updateProduct({ ...product, ...data });
+        showToast('Produto atualizado com sucesso!', 'success');
       } else {
-        addProduct(data);
+        await addProduct(data);
+        showToast('Produto criado com sucesso!', 'success');
       }
       
       reset();
       onClose();
     } catch (error) {
       console.error('Error saving product:', error);
+      showToast('Erro ao salvar produto', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +131,7 @@ export function ProductForm({ product, isOpen, onClose }: ProductFormProps) {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
                     >
                       <option value="">Selecione uma categoria</option>
-                      {state.categories.map((category) => (
+                      {categories.map((category: any) => (
                         <option key={category.id} value={category.name}>
                           {category.name}
                         </option>

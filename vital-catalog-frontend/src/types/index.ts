@@ -27,6 +27,18 @@ export interface Category {
   color: string;
 }
 
+export interface Contact {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  product_id?: string;
+  product_name?: string;
+  created_at?: string;
+  status?: 'pending' | 'contacted' | 'completed';
+}
+
 export interface ContactRequest {
   id: string;
   clientName: string;

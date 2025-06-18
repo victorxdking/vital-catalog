@@ -1,35 +1,68 @@
-import React from 'react';
-import { MessageCircle, Phone, Calendar, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { MessageCircle, Phone, Calendar, User, Mail, Edit } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
+import { useToast } from '../../context/ToastContext';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 
-// Mock data for contacts
-const mockContacts = [
-  {
-    id: '1',
-    clientName: 'Maria Silva',
-    clientPhone: '(11) 99999-1234',
-    message: 'Gostaria de mais informações sobre os produtos de cabelo.',
-    createdAt: new Date('2024-01-15T10:30:00'),
-    status: 'pending' as const,
-  },
-  {
-    id: '2',
-    clientName: 'João Santos',
-    clientPhone: '(11) 99999-5678',
-    message: 'Preciso de orçamento para base líquida e perfumes.',
-    createdAt: new Date('2024-01-14T14:20:00'),
-    status: 'contacted' as const,
-  },
-  {
-    id: '3',
-    clientName: 'Ana Costa',
-    clientPhone: '(11) 99999-9012',
-    message: 'Quando chega o creme corporal nutritivo?',
-    createdAt: new Date('2024-01-13T09:45:00'),
-    status: 'completed' as const,
-  },
-];
+interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  product_id?: string;
+  product_name?: string;
+  status: 'pending' | 'contacted' | 'completed';
+  created_at: string;
+  updated_at: string;
+}
 
 export function Contacts() {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const fetchContacts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setContacts(data || []);
+    } catch (error: any) {
+      showToast('Erro ao carregar contatos', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateContactStatus = async (id: string, status: Contact['status']) => {
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      setContacts(prev => 
+        prev.map(contact => 
+          contact.id === id ? { ...contact, status } : contact
+        )
+      );
+      
+      showToast('Status atualizado com sucesso!', 'success');
+    } catch (error: any) {
+      showToast('Erro ao atualizar status', 'error');
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -62,6 +95,14 @@ export function Contacts() {
     window.open(whatsappUrl, '_blank');
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <LoadingSpinner size="lg" className="text-[#183263]" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -80,7 +121,7 @@ export function Contacts() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Pendentes</p>
               <p className="text-2xl font-bold text-gray-900">
-                {mockContacts.filter(c => c.status === 'pending').length}
+                {contacts.filter(c => c.status === 'pending').length}
               </p>
             </div>
           </div>
@@ -92,7 +133,7 @@ export function Contacts() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Contatados</p>
               <p className="text-2xl font-bold text-gray-900">
-                {mockContacts.filter(c => c.status === 'contacted').length}
+                {contacts.filter(c => c.status === 'contacted').length}
               </p>
             </div>
           </div>
@@ -104,7 +145,7 @@ export function Contacts() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Concluídos</p>
               <p className="text-2xl font-bold text-gray-900">
-                {mockContacts.filter(c => c.status === 'completed').length}
+                {contacts.filter(c => c.status === 'completed').length}
               </p>
             </div>
           </div>
@@ -120,24 +161,38 @@ export function Contacts() {
         </div>
 
         <div className="divide-y divide-gray-200">
-          {mockContacts.map((contact) => (
+          {contacts.map((contact) => (
             <div key={contact.id} className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <h3 className="text-lg font-medium text-gray-900">
-                      {contact.clientName}
+                      {contact.name}
                     </h3>
                     {getStatusBadge(contact.status)}
                   </div>
                   
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <Phone className="w-4 h-4 mr-1" />
-                    <span className="mr-4">{contact.clientPhone}</span>
-                    <Calendar className="w-4 h-4 mr-1" />
-                    <span>
-                      {contact.createdAt.toLocaleDateString('pt-BR')} às{' '}
-                      {contact.createdAt.toLocaleTimeString('pt-BR', {
+                  {contact.product_name && (
+                    <div className="mb-2">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                        Produto: {contact.product_name}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center text-sm text-gray-500 mb-3 flex-wrap gap-4">
+                    <span className="flex items-center">
+                      <Phone className="w-4 h-4 mr-1" />
+                      {contact.phone}
+                    </span>
+                    <span className="flex items-center">
+                      <Mail className="w-4 h-4 mr-1" />
+                      {contact.email}
+                    </span>
+                    <span className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {new Date(contact.created_at).toLocaleDateString('pt-BR')} às{' '}
+                      {new Date(contact.created_at).toLocaleTimeString('pt-BR', {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
@@ -147,21 +202,31 @@ export function Contacts() {
                   <p className="text-gray-700 mb-4">{contact.message}</p>
                 </div>
 
-                <div className="ml-4">
+                <div className="ml-4 flex flex-col space-y-2">
                   <button
-                    onClick={() => handleWhatsApp(contact.clientPhone, contact.clientName)}
+                    onClick={() => handleWhatsApp(contact.phone, contact.name)}
                     className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>Responder</span>
                   </button>
+                  
+                  <select
+                    value={contact.status}
+                    onChange={(e) => updateContactStatus(contact.id, e.target.value as Contact['status'])}
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-[#183263] focus:border-[#183263]"
+                  >
+                    <option value="pending">Pendente</option>
+                    <option value="contacted">Contatado</option>
+                    <option value="completed">Concluído</option>
+                  </select>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {mockContacts.length === 0 && (
+        {contacts.length === 0 && (
           <div className="text-center py-12">
             <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">

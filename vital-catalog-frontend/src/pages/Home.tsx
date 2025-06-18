@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { ProductModal } from '../components/ProductModal';
 import { SearchBar } from '../components/SearchBar';
 import { FilterBar } from '../components/FilterBar';
 import { useProducts } from '../hooks/useProducts';
-import { useApp } from '../context/AppContext';
 import { Product } from '../types';
 import { Loader } from 'lucide-react';
 import BannerVideo from '../components/BannerVideo';
 
-export function Home() {
-  const { products, isLoading, incrementViews } = useProducts();
-  const { state } = useApp();
+interface HomeProps {
+  onProductInterest?: (product: Product) => void;
+}
+
+export function Home({ onProductInterest }: HomeProps) {
+  const { products, categories, isLoading, incrementViews } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -19,12 +21,12 @@ export function Home() {
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.reference.toLowerCase().includes(searchQuery.toLowerCase());
+      product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.code?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.reference?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
+    const matchesCategory = selectedCategory === '' || product.category_id === selectedCategory || product.category === selectedCategory;
     const matchesStock = selectedStock === '' || product.stock === selectedStock;
 
     return matchesSearch && matchesCategory && matchesStock;
@@ -74,6 +76,7 @@ export function Home() {
               onCategoryChange={setSelectedCategory}
               selectedStock={selectedStock}
               onStockChange={setSelectedStock}
+              categories={categories}
             />
           </div>
 

@@ -1,130 +1,177 @@
-import { useEffect } from 'react';
-import { useApp } from '../context/AppContext';
-import { Product } from '../types';
-
-// Mock data for products
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Shampoo Hidratante Premium',
-    description: 'Shampoo com fórmula exclusiva para cabelos ressecados e danificados. Contém óleo de argan e queratina.',
-    category: 'Cabelo',
-    code: 'SHP001',
-    reference: 'REF-SHP-001',
-    stock: 'available',
-    images: ['https://images.pexels.com/photos/4465124/pexels-photo-4465124.jpeg'],
-    views: 145,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-  },
-  {
-    id: '2',
-    name: 'Sérum Anti-idade Renovador',
-    description: 'Sérum facial com ácido hialurônico e vitamina C para rejuvenescimento da pele.',
-    category: 'Pele',
-    code: 'SER002',
-    reference: 'REF-SER-002',
-    stock: 'available',
-    images: ['https://images.pexels.com/photos/7755461/pexels-photo-7755461.jpeg'],
-    views: 203,
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-10'),
-  },
-  {
-    id: '3',
-    name: 'Base Líquida Cobertura Total',
-    description: 'Base líquida com alta cobertura e longa duração. Disponível em 20 tons.',
-    category: 'Maquiagem',
-    code: 'BSE003',
-    reference: 'REF-BSE-003',
-    stock: 'available',
-    images: ['https://images.pexels.com/photos/2113855/pexels-photo-2113855.jpeg'],
-    views: 89,
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-01-20'),
-  },
-  {
-    id: '4',
-    name: 'Perfume Floral Elegance',
-    description: 'Fragrância feminina com notas florais de jasmim e rosa. Edição limitada.',
-    category: 'Perfumaria',
-    code: 'PRF004',
-    reference: 'REF-PRF-004',
-    stock: 'coming_soon',
-    images: ['https://images.pexels.com/photos/1038628/pexels-photo-1038628.jpeg'],
-    views: 67,
-    createdAt: new Date('2024-01-25'),
-    updatedAt: new Date('2024-01-25'),
-  },
-  {
-    id: '5',
-    name: 'Creme Corporal Nutritivo',
-    description: 'Creme hidratante corporal com manteiga de karité e óleo de coco.',
-    category: 'Pele',
-    code: 'CRP005',
-    reference: 'REF-CRP-005',
-    stock: 'out_of_stock',
-    images: ['https://images.pexels.com/photos/4465831/pexels-photo-4465831.jpeg'],
-    views: 112,
-    createdAt: new Date('2024-01-12'),
-    updatedAt: new Date('2024-01-12'),
-  },
-  {
-    id: '6',
-    name: 'Kit Tratamento Facial Completo',
-    description: 'Kit com limpador, tônico e hidratante para todos os tipos de pele.',
-    category: 'Estética',
-    code: 'KIT006',
-    reference: 'REF-KIT-006',
-    stock: 'available',
-    images: ['https://images.pexels.com/photos/7755456/pexels-photo-7755456.jpeg'],
-    views: 178,
-    createdAt: new Date('2024-01-08'),
-    updatedAt: new Date('2024-01-08'),
-  },
-];
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { Product, Category } from '../types';
 
 export function useProducts() {
-  const { state, dispatch } = useApp();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Buscar produtos do Supabase com join das categorias
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        categories (
+          name
+        )
+      `);
+    if (!error && data) {
+      // Mapear os dados para incluir category como string
+      const mappedProducts = data.map(product => ({
+        ...product,
+        category: product.categories?.name || 'Sem categoria'
+      }));
+      setProducts(mappedProducts as Product[]);
+    }
+    setIsLoading(false);
+  };
+
+  // Buscar categorias do Supabase
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*');
+    if (!error && data) {
+      setCategories(data as Category[]);
+    }
+  };
 
   useEffect(() => {
-    // Simulate API call
-    if (state.products.length === 0) {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      setTimeout(() => {
-        dispatch({ type: 'SET_PRODUCTS', payload: mockProducts });
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }, 1000);
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+  const addProduct = async (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'views'>) => {
+    // Buscar o category_id baseado no nome da categoria
+    const { data: categoryData } = await supabase
+      .from('categories')
+      .select('id')
+      .eq('name', product.category)
+      .single();
+
+    if (!categoryData) {
+      throw new Error('Categoria não encontrada');
     }
-  }, [state.products.length, dispatch]);
 
-  const addProduct = (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'views'>) => {
-    const newProduct: Product = {
-      ...product,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      views: 0,
-    };
-    dispatch({ type: 'ADD_PRODUCT', payload: newProduct });
+    const { data, error } = await supabase
+      .from('products')
+      .insert([{
+        name: product.name,
+        description: product.description,
+        category_id: categoryData.id,
+        code: product.code,
+        reference: product.reference,
+        stock: product.stock,
+        images: product.images,
+        views: 0
+      }])
+      .select(`
+        *,
+        categories (
+          name
+        )
+      `)
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (data) {
+      const mappedProduct = {
+        ...data,
+        category: data.categories?.name || 'Sem categoria'
+      };
+      setProducts(prevProducts => [...prevProducts, mappedProduct as Product]);
+    }
+
+    return data;
   };
 
-  const updateProduct = (product: Product) => {
-    const updatedProduct = { ...product, updatedAt: new Date() };
-    dispatch({ type: 'UPDATE_PRODUCT', payload: updatedProduct });
+  const updateProduct = async (product: Product) => {
+    // Buscar o category_id baseado no nome da categoria
+    const { data: categoryData } = await supabase
+      .from('categories')
+      .select('id')
+      .eq('name', product.category)
+      .single();
+
+    if (!categoryData) {
+      throw new Error('Categoria não encontrada');
+    }
+
+    const { data, error } = await supabase
+      .from('products')
+      .update({
+        name: product.name,
+        description: product.description,
+        category_id: categoryData.id,
+        code: product.code,
+        reference: product.reference,
+        stock: product.stock,
+        images: product.images,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', product.id)
+      .select(`
+        *,
+        categories (
+          name
+        )
+      `)
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (data) {
+      const mappedProduct = {
+        ...data,
+        category: data.categories?.name || 'Sem categoria'
+      };
+      setProducts(prevProducts => 
+        prevProducts.map(p => p.id === product.id ? mappedProduct as Product : p)
+      );
+    }
+
+    return data;
   };
 
-  const deleteProduct = (id: string) => {
-    dispatch({ type: 'DELETE_PRODUCT', payload: id });
+  const deleteProduct = async (id: string) => {
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    setProducts(prevProducts => prevProducts.filter(p => p.id !== id));
   };
 
-  const incrementViews = (id: string) => {
-    dispatch({ type: 'INCREMENT_VIEWS', payload: id });
+  const incrementViews = async (id: string) => {
+    // Incrementar views no banco
+    const { error } = await supabase.rpc('increment_views', { product_id: id });
+
+    if (!error) {
+      // Atualizar estado local
+      setProducts(prevProducts => 
+        prevProducts.map(p => p.id === id ? { ...p, views: p.views + 1 } : p)
+      );
+    }
   };
 
   return {
-    products: state.products,
-    isLoading: state.isLoading,
+    products,
+    categories,
+    isLoading,
+    refetchProducts: fetchProducts,
+    refetchCategories: fetchCategories,
     addProduct,
     updateProduct,
     deleteProduct,

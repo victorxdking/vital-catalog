@@ -1,7 +1,9 @@
 import React from 'react';
 import { Heart, Eye, MessageCircle, Package } from 'lucide-react';
 import { Product } from '../types';
-import { useApp } from '../context/AppContext';
+import { useFavorites } from '../hooks/useFavorites';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../context/ToastContext';
 
 interface ProductCardProps {
   product: Product;
@@ -18,12 +20,25 @@ export function ProductCard({
   onEdit,
   onDelete,
 }: ProductCardProps) {
-  const { state, dispatch } = useApp();
-  const isFavorite = state.favorites.includes(product.id);
+  const { user } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const { showFavoriteToast, showToast } = useToast();
 
-  const handleFavoriteToggle = (e: React.MouseEvent) => {
+  const handleFavoriteToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    dispatch({ type: 'TOGGLE_FAVORITE', payload: product.id });
+    if (!user) {
+      showToast('Faça login para favoritar produtos', 'error');
+      return;
+    }
+    
+    const wasFavorite = isFavorite(product.id);
+    const result = await toggleFavorite(product.id);
+    
+    if (!result.error) {
+      showFavoriteToast(product.name, !wasFavorite);
+    } else {
+      showToast('Erro ao atualizar favoritos', 'error');
+    }
   };
 
   const handleWhatsApp = (e: React.MouseEvent) => {
@@ -32,6 +47,8 @@ export function ProductCard({
     const whatsappUrl = `https://api.whatsapp.com/send?phone=5511999999999&text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
+
+
 
   const getStockBadge = () => {
     switch (product.stock) {
@@ -79,12 +96,12 @@ export function ProductCard({
               <button
                 onClick={handleFavoriteToggle}
                 className={`p-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
-                  isFavorite
+                  isFavorite(product.id)
                     ? 'bg-red-500 text-white'
                     : 'bg-white/80 text-gray-600 hover:text-red-500'
                 }`}
               >
-                <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+                <Heart className={`w-4 h-4 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
               </button>
               <button
                 onClick={handleWhatsApp}
@@ -143,6 +160,7 @@ export function ProductCard({
           <span>Ref: {product.reference}</span>
         </div>
       </div>
+
     </div>
   );
 }
