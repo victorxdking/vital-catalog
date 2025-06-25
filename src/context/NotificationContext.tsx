@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Contact } from '../types';
 
@@ -9,6 +9,7 @@ interface NotificationContextType {
   markAsRead: (contactId: string) => void;
   clearNotification: () => void;
   refetch: () => void;
+  setEnabled: (enabled: boolean) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -17,10 +18,46 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [unreadContacts, setUnreadContacts] = useState(0);
   const [latestContacts, setLatestContacts] = useState<Contact[]>([]);
   const [newContactNotification, setNewContactNotification] = useState<Contact | null>(null);
+  const [enabled, setEnabled] = useState(false);
+
+  const fetchUnreadContacts = useCallback(async () => {
+    // Só buscar se estiver habilitado
+    if (!enabled) {
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      setUnreadContacts(data?.length || 0);
+      setLatestContacts(data?.slice(0, 5) || []);
+    } catch (error) {
+      console.error('Erro ao buscar contatos não lidos:', error);
+    }
+  }, [enabled]);
 
   useEffect(() => {
-    // Buscar contatos pendentes iniciais
-    fetchUnreadContacts();
+    if (enabled) {
+      fetchUnreadContacts();
+    } else {
+      // Limpar dados quando desabilitado
+      setUnreadContacts(0);
+      setLatestContacts([]);
+      setNewContactNotification(null);
+    }
+  }, [enabled, fetchUnreadContacts]);
+
+  useEffect(() => {
+    // Só configurar listeners se estiver habilitado
+    if (!enabled) {
+      return;
+    }
 
     // Configurar listener para novos contatos e atualizações
     const contactsSubscription = supabase
@@ -72,24 +109,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     return () => {
       contactsSubscription.unsubscribe();
     };
-  }, []);
-
-  const fetchUnreadContacts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('contacts')
-        .select('*')
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      
-      setUnreadContacts(data?.length || 0);
-      setLatestContacts(data?.slice(0, 5) || []);
-    } catch (error) {
-      console.error('Erro ao buscar contatos não lidos:', error);
-    }
-  };
+  }, [enabled]);
 
   const markAsRead = (contactId: string) => {
     setLatestContacts(prev => 
@@ -109,7 +129,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       newContactNotification,
       markAsRead,
       clearNotification,
-      refetch: fetchUnreadContacts
+      refetch: fetchUnreadContacts,
+      setEnabled
     }}>
       {children}
     </NotificationContext.Provider>
