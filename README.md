@@ -1,8 +1,6 @@
 # 📦 Vital Catalog
 
 <div align="center">
-  <img src="public/vital_cosmeticos.png" alt="Logo" width="200" height="200" style="border-radius: 10px;">
-  
   ### Sistema de Catálogo Digital para Gestão de Produtos
   
   [![Made with React](https://img.shields.io/badge/Made%20with-React-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
