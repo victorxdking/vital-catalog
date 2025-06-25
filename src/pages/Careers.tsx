@@ -193,7 +193,7 @@ export function Careers() {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors"
                   placeholder="Seu nome completo"
                 />
               </div>
@@ -209,7 +209,7 @@ export function Careers() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors"
                   placeholder="(00) 00000-0000"
                 />
               </div>
@@ -225,7 +225,7 @@ export function Careers() {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors"
                   placeholder="seu@email.com"
                 />
               </div>
@@ -240,7 +240,7 @@ export function Careers() {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#7ed957] focus:border-transparent transition-colors resize-none"
                   placeholder="Conte-nos um pouco sobre você e sua experiência..."
                 />
               </div>

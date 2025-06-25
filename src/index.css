@@ -29,7 +29,6 @@
   /* Otimizações para inputs em Android */
   input:not([type="checkbox"]):not([type="radio"]), textarea, select {
     -webkit-appearance: none;
-    border-radius: 0;
     font-size: 16px; /* Previne zoom no Android */
   }
   

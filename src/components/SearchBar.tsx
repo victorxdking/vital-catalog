@@ -40,7 +40,7 @@ export function SearchBar({ onSearch, placeholder = "Buscar produtos...", classN
             onSearch(e.target.value);
           }}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
         />
         {query && (
           <button

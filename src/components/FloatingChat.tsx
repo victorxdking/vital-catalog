@@ -279,7 +279,7 @@ export function FloatingChat({ selectedProduct, onProductClear }: FloatingChatPr
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="Seu nome"
                     />
 
@@ -289,7 +289,7 @@ export function FloatingChat({ selectedProduct, onProductClear }: FloatingChatPr
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="Seu e-mail"
                     />
 
@@ -299,7 +299,7 @@ export function FloatingChat({ selectedProduct, onProductClear }: FloatingChatPr
                       value={formData.phone}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="Seu telefone/WhatsApp"
                     />
 
@@ -308,7 +308,7 @@ export function FloatingChat({ selectedProduct, onProductClear }: FloatingChatPr
                       value={formData.message}
                       onChange={handleChange}
                       rows={3}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
                       placeholder="Sua mensagem..."
                     />
 
