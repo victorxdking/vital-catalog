@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset específico para Android */
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+  
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+  }
+  
+  /* Melhorar performance de scroll em Android */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Otimizações para inputs em Android */
+  input:not([type="checkbox"]):not([type="radio"]), textarea, select {
+    -webkit-appearance: none;
+    border-radius: 0;
+    font-size: 16px; /* Previne zoom no Android */
+  }
+  
+  /* Garantir que checkboxes e radio buttons sejam visíveis */
+  input[type="checkbox"], input[type="radio"] {
+    -webkit-appearance: auto;
+    appearance: auto;
+  }
+  
+  /* Estilos personalizados para inputs mais modernos */
+  input[type="checkbox"] {
+    border-radius: 4px !important;
+  }
+  
+  input[type="radio"] {
+    border-radius: 50% !important;
+  }
+  
+  /* Melhorar aparência dos selects */
+  select {
+    border-radius: 8px !important;
+  }
+  
+  /* Botões otimizados para toque */
+  button, .btn {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+}
+
+/* Utilitários para mobile */
+@layer utilities {
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  .mobile-safe {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  .android-shadow {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Animações otimizadas */
+  .smooth-transition {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Scroll suave para Android */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Classes utilitárias para inputs modernos */
+  .modern-checkbox {
+    @apply w-4 h-4 text-[#7ed957] border-2 border-gray-300 rounded-md focus:ring-[#7ed957] focus:ring-2 focus:ring-offset-0 transition-colors;
+  }
+  
+  .modern-radio {
+    @apply w-4 h-4 text-[#7ed957] border-2 border-gray-300 focus:ring-[#7ed957] focus:ring-2 focus:ring-offset-0 transition-colors;
+  }
+  
+  .modern-select {
+    @apply border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7ed957] focus:border-[#7ed957] bg-white hover:border-gray-400 transition-colors appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+}
+
+/* Animações personalizadas */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3) translateY(-50px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Otimizações específicas para Chrome Android */
+@media screen and (-webkit-min-device-pixel-ratio: 1.5) {
+  .crisp-edges {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Melhorias para telas de alta densidade */
+@media (-webkit-min-device-pixel-ratio: 2) {
+  .high-res {
+    transform: scale(1);
+  }
+}

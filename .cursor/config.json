@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "node",
+      "args": ["scripts/mcp-playwright.js"],
+      "cwd": ".",
+      "env": {
+        "PLAYWRIGHT_BROWSER": "chromium",
+        "CI": "false"
+      }
+    }
+  },
+  "playwright": {
+    "enabled": true,
+    "testDir": "./tests",
+    "baseURL": "http://localhost:5175"
+  }
+} 
