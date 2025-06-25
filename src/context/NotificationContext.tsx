@@ -22,7 +22,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Buscar contatos pendentes iniciais
     fetchUnreadContacts();
 
-    // Configurar listener para novos contatos - APENAS UMA VEZ
+    // Configurar listener para novos contatos e atualizações
     const contactsSubscription = supabase
       .channel('contacts-notifications')
       .on(
@@ -42,6 +42,29 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           setTimeout(() => {
             setNewContactNotification(null);
           }, 5000);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'contacts'
+        },
+        (payload) => {
+          const updatedContact = payload.new as Contact;
+          const oldContact = payload.old as Contact;
+          
+          // Se mudou de pending para outro status, diminuir contador
+          if (oldContact.status === 'pending' && updatedContact.status !== 'pending') {
+            setUnreadContacts(prev => Math.max(0, prev - 1));
+            setLatestContacts(prev => prev.filter(contact => contact.id !== updatedContact.id));
+          }
+          // Se mudou de outro status para pending, aumentar contador
+          else if (oldContact.status !== 'pending' && updatedContact.status === 'pending') {
+            setUnreadContacts(prev => prev + 1);
+            setLatestContacts(prev => [updatedContact, ...prev.slice(0, 4)]);
+          }
         }
       )
       .subscribe();

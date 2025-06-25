@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MessageCircle, Phone, Calendar, User, Mail, Edit, Trash2, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { useToast } from '../../context/ToastContext';
+import { useNotifications } from '../../context/NotificationContext';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 
 interface Contact {
@@ -23,6 +24,7 @@ export function Contacts() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'contacted' | 'completed'>('all');
   const { showToast } = useToast();
+  const { refetch } = useNotifications();
 
   useEffect(() => {
     fetchContacts();
@@ -71,6 +73,9 @@ export function Contacts() {
         )
       );
 
+      // Atualizar contexto de notificações
+      refetch();
+
       showToast('Status atualizado com sucesso', 'success');
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
@@ -92,6 +97,10 @@ export function Contacts() {
       if (error) throw error;
 
       setContacts(prev => prev.filter(contact => contact.id !== contactId));
+      
+      // Atualizar contexto de notificações
+      refetch();
+      
       showToast('Contato excluído com sucesso', 'success');
     } catch (error) {
       console.error('Erro ao excluir contato:', error);
