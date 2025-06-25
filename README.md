@@ -1,9 +1,9 @@
-# 💄 Vital Catalog
+# 📦 Vital Catalog
 
 <div align="center">
-  <img src="public/vital_cosmeticos.png" alt="Vital Cosméticos" width="200" height="200" style="border-radius: 10px;">
+  <img src="public/vital_cosmeticos.png" alt="Logo" width="200" height="200" style="border-radius: 10px;">
   
-  ### Catálogo Digital de Cosméticos Vital
+  ### Sistema de Catálogo Digital para Gestão de Produtos
   
   [![Made with React](https://img.shields.io/badge/Made%20with-React-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -15,25 +15,26 @@
 
 ## 📖 Sobre o Projeto
 
-O **Vital Catalog** é uma aplicação web moderna e responsiva desenvolvida para a Vital Cosméticos, oferecendo uma experiência completa de catálogo digital de produtos de beleza. A plataforma combina um design elegante com funcionalidades avançadas para proporcionar a melhor experiência tanto para clientes quanto para administradores.
+O **Vital Catalog** é uma aplicação web moderna e responsiva para gestão e exibição de catálogos digitais de produtos. A plataforma oferece uma solução completa para empresas que desejam apresentar seus produtos de forma elegante e profissional, combinando funcionalidades avançadas tanto para clientes quanto para administradores.
 
 ### ✨ Principais Funcionalidades
 
 #### 🛍️ **Para Clientes**
 - **Catálogo Interativo**: Navegação fluida através dos produtos com filtros avançados
-- **Sistema de Favoritos**: Salve seus produtos preferidos para consulta posterior
+- **Sistema de Favoritos**: Salve produtos preferidos para consulta posterior
 - **Busca Inteligente**: Encontre produtos rapidamente por nome, categoria ou características
-- **Chat Flutuante**: Tire dúvidas sobre produtos específicos em tempo real
+- **Chat de Suporte**: Interface para tirar dúvidas sobre produtos específicos
 - **Design Responsivo**: Experiência otimizada para desktop, tablet e mobile
-- **Páginas Informativas**: Seções dedicadas sobre a empresa e oportunidades de carreira
+- **Páginas Institucionais**: Seções sobre a empresa e oportunidades de carreira
 
 #### 👨‍💼 **Para Administradores**
-- **Dashboard Completo**: Visão geral de estatísticas e métricas importantes
-- **Gestão de Produtos**: CRUD completo com upload de imagens
-- **Gerenciamento de Pastas**: Organização e exportação de catálogos em PDF
-- **Central de Contatos**: Acompanhamento de leads e interações
-- **Configurações**: Personalização de informações da empresa
-- **Sistema de Autenticação**: Acesso seguro com diferentes níveis de permissão
+- **Dashboard Analítico**: Visão geral de estatísticas e métricas importantes
+- **Gestão Completa de Produtos**: CRUD completo com upload múltiplo de imagens
+- **Gerenciamento de Categorias**: Organização flexível dos produtos
+- **Exportação de Catálogos**: Geração de PDFs profissionais para impressão
+- **Central de Contatos**: Acompanhamento de leads e interações de clientes
+- **Configurações do Sistema**: Personalização de informações da empresa
+- **Sistema de Autenticação**: Controle de acesso com diferentes níveis de permissão
 
 ---
 
@@ -72,7 +73,7 @@ O **Vital Catalog** é uma aplicação web moderna e responsiva desenvolvida par
 ```
 vital-catalog/
 ├── public/                     # Arquivos públicos
-│   ├── vital_cosmeticos.png   # Logo da empresa
+│   ├── vital_cosmeticos.png   # Logo da aplicação
 │   └── vital 1.mp4           # Vídeo promocional
 ├── src/
 │   ├── components/            # Componentes reutilizáveis
@@ -84,12 +85,12 @@ vital-catalog/
 │   │   └── ...
 │   ├── pages/                # Páginas da aplicação
 │   │   ├── admin/           # Páginas administrativas
-│   │   ├── Home.tsx         # Página inicial
+│   │   ├── Home.tsx         # Página inicial (catálogo)
 │   │   ├── About.tsx        # Sobre a empresa
 │   │   ├── Careers.tsx      # Carreiras
-│   │   ├── Favorites.tsx    # Favoritos
-│   │   └── Login.tsx        # Login
-│   ├── context/             # Context API
+│   │   ├── Favorites.tsx    # Produtos favoritos
+│   │   └── Login.tsx        # Autenticação
+│   ├── context/             # Context API (estado global)
 │   ├── hooks/               # Custom hooks
 │   ├── lib/                 # Configurações (Supabase)
 │   ├── types/               # Definições TypeScript
@@ -128,9 +129,13 @@ VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
 
 ### **4. Configure o Supabase**
 1. Crie um novo projeto no [Supabase](https://supabase.com/)
-2. Configure as tabelas necessárias (schema SQL disponível na documentação)
+2. Configure as tabelas necessárias:
+   - `products` - Armazenamento dos produtos
+   - `categories` - Categorias dos produtos
+   - `contacts` - Contatos/leads dos clientes
+   - `users` - Usuários do sistema
 3. Configure as políticas de RLS (Row Level Security)
-4. Configure o Storage para upload de imagens
+4. Configure o Storage para upload de imagens dos produtos
 
 ### **5. Execute o projeto**
 ```bash
@@ -162,48 +167,61 @@ npm run lint     # Executa o linting do código
 
 ### **Gestão de Produtos**
 - CRUD completo de produtos
-- Upload múltiplo de imagens
-- Categorização flexível
+- Upload múltiplo de imagens com preview
+- Categorização flexível e personalizável
 - Filtros avançados (preço, categoria, disponibilidade)
-- Busca em tempo real
+- Busca em tempo real por múltiplos campos
+- Controle de estoque e disponibilidade
 
 ### **Sistema de Favoritos**
 - Adicionar/remover produtos dos favoritos
 - Persistência no localStorage
 - Sincronização com conta do usuário
-- Interface intuitiva
+- Interface intuitiva e responsiva
 
-### **Chat Flutuante**
-- Interface de chat moderna
+### **Chat de Suporte**
+- Interface de chat moderna e limpa
 - Integração com produtos selecionados
-- Notificações em tempo real
-- Design responsivo
+- Sistema de notificações
+- Design completamente responsivo
 
-### **Geração de PDFs**
-- Catálogos personalizados
-- Layout profissional
-- Exportação de listas de produtos
-- Otimização para impressão
+### **Geração de Catálogos PDF**
+- Exportação de catálogos personalizados
+- Layout profissional e customizável
+- Seleção específica de produtos
+- Otimização para impressão comercial
+
+### **Dashboard Administrativo**
+- Métricas em tempo real
+- Gráficos e estatísticas de produtos
+- Acompanhamento de interações
+- Relatórios de performance
 
 ---
 
 ## 📱 Design Responsivo
 
-O Vital Catalog foi desenvolvido com uma abordagem **mobile-first**, garantindo uma experiência excepcional em todos os dispositivos:
+Desenvolvido com abordagem **mobile-first**, garantindo experiência excepcional em todos os dispositivos:
 
-- **📱 Mobile**: Interface otimizada para telas pequenas
+- **📱 Mobile**: Interface otimizada para smartphones
 - **📱 Tablet**: Layout adaptativo para tablets
 - **🖥️ Desktop**: Experiência completa para desktops
 - **🖨️ Print**: Estilos específicos para impressão
 
 ---
 
-## 🎨 Paleta de Cores
+## 🎨 Sistema de Design
 
-- **Primária**: `#183263` (Azul Corporativo)
+### **Paleta de Cores**
+- **Primária**: `#183263` (Azul Profissional)
 - **Secundária**: `#2563eb` (Azul Vibrante)
-- **Accent**: `#ec4899` (Rosa)
-- **Neutros**: Tons de cinza para textos e backgrounds
+- **Accent**: `#ec4899` (Rosa Destaque)
+- **Neutros**: Escala de cinzas para textos e backgrounds
+
+### **Tipografia**
+- Font system stack otimizada para legibilidade
+- Hierarquia visual clara
+- Responsividade em todas as telas
 
 ---
 
@@ -211,28 +229,52 @@ O Vital Catalog foi desenvolvido com uma abordagem **mobile-first**, garantindo 
 
 - **Autenticação JWT** via Supabase
 - **Row Level Security (RLS)** no banco de dados
-- **Validação de entrada** em todos os formulários
+- **Validação rigorosa** de entrada em todos os formulários
 - **Sanitização de dados** antes do armazenamento
 - **HTTPS obrigatório** em produção
+- **Controle de permissões** por nível de usuário
 
 ---
 
 ## 📈 Performance
 
-- **Lazy Loading** de imagens
-- **Code Splitting** automático
+- **Lazy Loading** inteligente de imagens
+- **Code Splitting** automático por rotas
 - **Otimização de bundle** com Vite
-- **Cache inteligente** de requests
-- **Compressão de imagens**
+- **Cache estratégico** de requests da API
+- **Compressão automática** de assets
+- **Lighthouse Score** otimizado
+
+---
+
+## 🚀 Deploy
+
+### **Vercel (Recomendado)**
+```bash
+npm run build
+npx vercel --prod
+```
+
+### **Netlify**
+```bash
+npm run build
+npx netlify deploy --prod --dir=dist
+```
+
+### **Docker**
+```bash
+docker build -t vital-catalog .
+docker run -p 3000:80 vital-catalog
+```
 
 ---
 
 ## 🤝 Contribuindo
 
 1. Faça o fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+2. Crie uma branch para sua feature (`git checkout -b feature/NovaFuncionalidade`)
+3. Commit suas mudanças (`git commit -m 'Add: Nova funcionalidade incrível'`)
+4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
 5. Abra um Pull Request
 
 ---
@@ -243,16 +285,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ---
 
-## 📞 Contato
-
-**Vital Cosméticos**
-- 📧 Email: contato@vitalcosmeticos.com.br
-- 📱 WhatsApp: (11) 99999-9999
-- 🌐 Website: [www.vitalcosmeticos.com.br](https://www.vitalcosmeticos.com.br)
-
----
-
 <div align="center">
-  <p>Desenvolvido com ❤️ pela equipe Vital Cosméticos</p>
-  <p>© 2024 Vital Cosméticos. Todos os direitos reservados.</p>
-</div> 
+  <p>⭐ Se este projeto foi útil para você, considere dar uma estrela!</p>
+  <p>🔧 Desenvolvido com React, TypeScript e muito ☕</p>
+</div>
+
