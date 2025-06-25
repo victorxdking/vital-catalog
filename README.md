@@ -121,28 +121,26 @@ npm install
 
 ### **3. Configure as variáveis de ambiente**
 
-⚠️ **IMPORTANTE - SEGURANÇA DAS CREDENCIAIS:**
+⚠️ **CONFIGURAÇÃO DAS CREDENCIAIS:**
 
-O projeto usa variáveis de ambiente para proteger suas credenciais do Supabase. **NUNCA commite credenciais reais no GitHub!**
+O projeto inclui um arquivo `.env` com valores de template. **Edite este arquivo com suas credenciais reais do Supabase.**
 
-1. **Copie o arquivo de exemplo:**
-   ```bash
-   copy .env.example .env.local
-   # ou no Linux/Mac: cp .env.example .env.local
-   ```
-
-2. **Edite o arquivo `.env.local` com suas credenciais reais:**
+1. **Edite o arquivo `.env` na raiz do projeto:**
    ```env
+   # Substitua pelos seus valores reais:
    VITE_SUPABASE_URL=https://seuprojetoid.supabase.co
    VITE_SUPABASE_ANON_KEY=sua_chave_anonima_real_aqui
    ```
 
-3. **Verifique que o `.env.local` está no .gitignore** (já configurado)
+2. **Onde encontrar suas credenciais do Supabase:**
+   - Acesse [Supabase Dashboard](https://supabase.com/)
+   - Vá em **Settings > API**
+   - Copie a **Project URL** → `VITE_SUPABASE_URL`
+   - Copie a **anon public key** → `VITE_SUPABASE_ANON_KEY`
 
-**🔐 Como funciona a proteção:**
-- Arquivos `.env.local` são ignorados pelo Git (não vão para o GitHub)
-- O arquivo `.env.example` serve como template (sem credenciais reais)
-- As variáveis são carregadas apenas localmente pelo Vite
+**🔐 Sobre segurança:**
+- O arquivo `.env` está no repositório apenas como template
+- Após clonar, cada desenvolvedor edita com suas próprias credenciais
 - Em produção, configure as variáveis no painel da plataforma de deploy
 
 ### **4. Configure o Supabase**
@@ -267,36 +265,44 @@ Desenvolvido com abordagem **mobile-first**, garantindo experiência excepcional
 
 ## 🚀 Deploy
 
-### **Variáveis de Ambiente em Produção**
-Antes de fazer deploy, configure as variáveis de ambiente na plataforma escolhida:
+### **⚠️ Antes do Deploy - Variáveis de Ambiente**
+
+**IMPORTANTE:** O arquivo `.env` no repositório contém apenas valores de template. Em produção, você deve configurar suas credenciais reais nas variáveis de ambiente da plataforma.
 
 **Para Vercel:**
-1. Acesse o dashboard do Vercel
-2. Vá em Settings > Environment Variables
-3. Adicione:
-   - `VITE_SUPABASE_URL` = sua URL do Supabase
-   - `VITE_SUPABASE_ANON_KEY` = sua chave anônima
+1. Conecte seu repositório no Vercel
+2. Vá em **Settings > Environment Variables**
+3. Adicione suas credenciais reais:
+   - `VITE_SUPABASE_URL` = `https://seuprojetoid.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = `sua_chave_anonima_real`
 
 **Para Netlify:**
-1. Acesse Site Settings > Environment Variables
-2. Adicione as mesmas variáveis acima
+1. Conecte seu repositório no Netlify
+2. Vá em **Site Settings > Environment Variables**
+3. Adicione as mesmas variáveis acima
 
-### **Vercel (Recomendado)**
+### **Comandos de Deploy:**
+
+**Vercel (Recomendado):**
 ```bash
 npm run build
 npx vercel --prod
 ```
 
-### **Netlify**
+**Netlify:**
 ```bash
 npm run build
 npx netlify deploy --prod --dir=dist
 ```
 
-### **Docker**
+**Docker:**
 ```bash
-# Build com variáveis de ambiente
-docker build --build-arg VITE_SUPABASE_URL=sua_url --build-arg VITE_SUPABASE_ANON_KEY=sua_chave -t vital-catalog .
+# Build passando as variáveis como argumentos
+docker build \
+  --build-arg VITE_SUPABASE_URL=https://seuprojetoid.supabase.co \
+  --build-arg VITE_SUPABASE_ANON_KEY=sua_chave_real \
+  -t vital-catalog .
+
 docker run -p 3000:80 vital-catalog
 ```
 

@@ -23,8 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment Variables (IMPORTANTE: Nunca commitar credenciais!)
-.env
+# Environment Variables (mantemos .env no repositório como template)
 .env.local
 .env.development.local
 .env.test.local
