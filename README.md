@@ -1,12 +1,14 @@
-# 📦 Vital Catalog
+# 🛍️ Vital Catalog
 
 <div align="center">
-  ### Sistema de Catálogo Digital para Gestão de Produtos
   
-  [![Made with React](https://img.shields.io/badge/Made%20with-React-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-  [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+### 📦 Sistema de Catálogo Digital para Gestão de Produtos
+  
+[![Made with React](https://img.shields.io/badge/Made%20with-React-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+
 </div>
 
 ---
@@ -118,12 +120,30 @@ npm install
 ```
 
 ### **3. Configure as variáveis de ambiente**
-Crie um arquivo `.env.local` na raiz do projeto:
 
-```env
-VITE_SUPABASE_URL=sua_url_do_supabase
-VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
-```
+⚠️ **IMPORTANTE - SEGURANÇA DAS CREDENCIAIS:**
+
+O projeto usa variáveis de ambiente para proteger suas credenciais do Supabase. **NUNCA commite credenciais reais no GitHub!**
+
+1. **Copie o arquivo de exemplo:**
+   ```bash
+   copy .env.example .env.local
+   # ou no Linux/Mac: cp .env.example .env.local
+   ```
+
+2. **Edite o arquivo `.env.local` com suas credenciais reais:**
+   ```env
+   VITE_SUPABASE_URL=https://seuprojetoid.supabase.co
+   VITE_SUPABASE_ANON_KEY=sua_chave_anonima_real_aqui
+   ```
+
+3. **Verifique que o `.env.local` está no .gitignore** (já configurado)
+
+**🔐 Como funciona a proteção:**
+- Arquivos `.env.local` são ignorados pelo Git (não vão para o GitHub)
+- O arquivo `.env.example` serve como template (sem credenciais reais)
+- As variáveis são carregadas apenas localmente pelo Vite
+- Em produção, configure as variáveis no painel da plataforma de deploy
 
 ### **4. Configure o Supabase**
 1. Crie um novo projeto no [Supabase](https://supabase.com/)
@@ -247,6 +267,20 @@ Desenvolvido com abordagem **mobile-first**, garantindo experiência excepcional
 
 ## 🚀 Deploy
 
+### **Variáveis de Ambiente em Produção**
+Antes de fazer deploy, configure as variáveis de ambiente na plataforma escolhida:
+
+**Para Vercel:**
+1. Acesse o dashboard do Vercel
+2. Vá em Settings > Environment Variables
+3. Adicione:
+   - `VITE_SUPABASE_URL` = sua URL do Supabase
+   - `VITE_SUPABASE_ANON_KEY` = sua chave anônima
+
+**Para Netlify:**
+1. Acesse Site Settings > Environment Variables
+2. Adicione as mesmas variáveis acima
+
 ### **Vercel (Recomendado)**
 ```bash
 npm run build
@@ -261,7 +295,8 @@ npx netlify deploy --prod --dir=dist
 
 ### **Docker**
 ```bash
-docker build -t vital-catalog .
+# Build com variáveis de ambiente
+docker build --build-arg VITE_SUPABASE_URL=sua_url --build-arg VITE_SUPABASE_ANON_KEY=sua_chave -t vital-catalog .
 docker run -p 3000:80 vital-catalog
 ```
 
